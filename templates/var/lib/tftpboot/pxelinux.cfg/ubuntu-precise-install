@@ -1,0 +1,7 @@
+DEFAULT ubuntu-precise-install
+
+LABEL ubuntu-precise-install
+KERNEL /ubuntu-precise-install/ubuntu-installer/amd64/linux
+INITRD /ubuntu-precise-install/ubuntu-installer/amd64/initrd.gz 
+APPEND preseed/url=http://10.7.0.3/deploy/ubuntu-precise-node/preseed.cfg \
+       auto=true priority=critical interface=eth0 locale=en_GB.UTF-8
