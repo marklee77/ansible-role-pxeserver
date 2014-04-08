@@ -55,15 +55,31 @@
   notify:
     - restart dnsmasq
 
+- name: create tftpboot directory
+  file:
+    path: /var/lib/tftpboot
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: create ubuntu-precise-install directory
+  file:
+    path: /var/lib/tftpboot/ubuntu-precise-install
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
 - name: download netboot archive
   get_url:
     url: http://archive.ubuntu.com/ubuntu/dists/precise/main/installer-amd64/current/images/netboot/netboot.tar.gz
     dest: /var/lib/tftpboot/ubuntu-precise-install/netboot.tar.gz
 
 - name: unpack netboot archive
-  unarchive: 
-    src: /var/lib/tftpboot/ubuntu-precise-install/netboot.tar.gz 
-    dest: /var/lib/tftpboot/ubuntu-precise-install/
+  command: tar xvzf netboot.tar.gz 
+           chdir=/var/lib/tftpboot/ubuntu-precise-install 
+           creates=/var/lib/tftpboot/ubuntu-precise-install/ubuntu-installer
 
 - name: make sure dnsmasq is started and enabled everywhere
   service: 
