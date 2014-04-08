@@ -1,0 +1,66 @@
+---
+# network gateway, dns, dhcp, tftp
+
+- name: ensure required packages are present
+  apt: 
+    pkg: "{{ item }}" 
+    state: latest 
+    update_cache: yes 
+    cache_valid_time: 600
+  with_items:
+    - dnsmasq
+
+- name: enable net.ipv4.ip_forward in sysctl
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+
+# FIXME: switch to ufw?
+- name: ensure iptables configuration is loaded at boot
+  template:
+    src: templates/etc/network/if-pre-up.d/iptablesload
+    dest: /etc/network/if-pre-up.d/iptablesload
+    owner: root
+    group: root
+    mode: 0755
+
+- name: ensure iptables configuration is saved at shutdown
+  template:
+    src: templates/etc/network/if-post-down.d/iptablessave
+    dest: /etc/network/if-post-down.d/iptablessave
+    owner: root
+    group: root
+    mode: 0755
+
+- name: check to see if masquerade rule is present...
+  command: iptables -t nat -C POSTROUTING -s 10.1.0.0/16 -j MASQUERADE
+  register: ipt_masquerade
+  ignore_errors: yes
+  changed_when: false
+
+- name: add if masquerade rule is not present...
+  command: iptables -t nat -A POSTROUTING -s 10.1.0.0/16 -j MASQUERADE
+  when: ipt_masquerade|failed
+
+    
+# FIXME: can be done with augeas?
+- name: update /etc/dnsmasq.conf from template
+  template:
+    src: templates/etc/dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart dnsmasq
+
+# get_url:
+# http://archive.ubuntu.com/ubuntu/dists/precise-updates/main/installer-amd64/current/images/netboot/netboot.tar.gz
+
+- name: make sure dnsmasq is started and enabled everywhere
+  service: 
+    name: dnsmasq
+    state: started 
+    enabled: yes
+
