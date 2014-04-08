@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  
+  config.vm.define "head" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "head"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+    end
+  end
+
+  config.vm.define "snode-01" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "snode-01"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+    end
+  end
+
+end

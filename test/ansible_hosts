@@ -1,0 +1,11 @@
+[all:vars]
+server_ip = 10.1.0.2
+server_fqdn = fermi.soe.cranfield.ac.uk
+management_network = 10.1.0.0/16
+ldap_base_dn = dc=fermi,dc=soe,dc=cranfield,dc=ac,dc=uk
+
+[head]
+10.1.0.2
+
+[compute]
+10.1.0.3

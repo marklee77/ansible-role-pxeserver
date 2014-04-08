@@ -17,10 +17,9 @@
     value: "1"
     state: present
 
-# FIXME: switch to ufw?
 - name: ensure iptables configuration is loaded at boot
   template:
-    src: templates/etc/network/if-pre-up.d/iptablesload
+    src: etc/network/if-pre-up.d/iptablesload
     dest: /etc/network/if-pre-up.d/iptablesload
     owner: root
     group: root
@@ -28,7 +27,7 @@
 
 - name: ensure iptables configuration is saved at shutdown
   template:
-    src: templates/etc/network/if-post-down.d/iptablessave
+    src: etc/network/if-post-down.d/iptablessave
     dest: /etc/network/if-post-down.d/iptablessave
     owner: root
     group: root
@@ -48,7 +47,7 @@
 # FIXME: can be done with augeas?
 - name: update /etc/dnsmasq.conf from template
   template:
-    src: templates/etc/dnsmasq.conf
+    src: etc/dnsmasq.conf
     dest: /etc/dnsmasq.conf
     owner: root
     group: root
@@ -62,9 +61,9 @@
     dest: /var/lib/tftpboot/ubuntu-precise-install/netboot.tar.gz
 
 - name: unpack netboot archive
-  chdir: /var/lib/tftpboot/ubuntu-precise-install
-  command: tar xvzf netboot.tar.gz
-  creates: /var/lib/tftpboot/ubuntu-precise-install/ubuntu-installer
+  unarchive: 
+    src: /var/lib/tftpboot/ubuntu-precise-install/netboot.tar.gz 
+    dest: /var/lib/tftpboot/ubuntu-precise-install/
 
 - name: make sure dnsmasq is started and enabled everywhere
   service: 

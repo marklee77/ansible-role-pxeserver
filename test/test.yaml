@@ -1,0 +1,6 @@
+- name: configure pxe boot server
+  hosts: head
+  sudo: yes
+  gather_facts: yes
+  roles:
+    - pxeserver
